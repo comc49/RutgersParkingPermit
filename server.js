@@ -1,11 +1,15 @@
 const express = require('express');
-const app = express();
 const puppeteer = require('puppeteer');
+var path = require('path')
 var serveStatic = require('serve-static');
-var port = process.env.PORT || 5000;
 
+const app = express();
+var port = process.env.PORT || 4040;
+console.log(port,'port')
+
+console.log(serveStatic(path.join(__dirname + "/dist")))
 app.use(serveStatic(path.join(__dirname + "/dist")));
-app.listen(port);
+app.listen(5000);
 console.log('server started '+ port);
 
 app.get('/', function(req, res) {
@@ -13,8 +17,8 @@ app.get('/', function(req, res) {
     var password = req.query.w;
     console.log('test', username,password);
 
-    (async() => {
         /*
+    (async() => {
         const browser = await puppeteer.launch({
             args: ['--no-sandbox', '--disable-setuid-sandbox'],
             headless: false
@@ -28,8 +32,8 @@ app.get('/', function(req, res) {
         });
 
         await browser.close();
-        */
     })();
+        */
 
 });
 
