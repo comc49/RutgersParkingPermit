@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const puppeteer = require('puppeteer');
+var serveStatic = require('serve-static');
 var port = process.env.PORT || 5000;
 
 var parseUrl = function(url) {
@@ -27,12 +28,14 @@ app.get('/', function(req, res) {
             headless: false
         });
         const page = await browser.newPage();
+        /*
         await run(username,password,page,browser, res);
         await page.screenshot().then(function(buffer) {
             res.setHeader('Content-Disposition', 'attachment;filename="' + 'test' + '.png"');
             res.setHeader('Content-Type', 'image/png');
             res.send(buffer)
         });
+        */
 
         await browser.close();
     })();
