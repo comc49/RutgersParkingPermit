@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const puppeteer = require('puppeteer');
-const port = process.env.PORT || 8080;
+var port = process.env.PORT || 5000;
 
 var parseUrl = function(url) {
     url = decodeURIComponent(url)
@@ -13,7 +13,6 @@ var parseUrl = function(url) {
 };
 
 app.use(serveStatic(__dirname + "/dist"));
-var port = process.env.PORT || 5000;
 app.listen(port);
 console.log('server started '+ port);
 
