@@ -4,16 +4,7 @@ const puppeteer = require('puppeteer');
 var serveStatic = require('serve-static');
 var port = process.env.PORT || 5000;
 
-var parseUrl = function(url) {
-    url = decodeURIComponent(url)
-    if (!/^(?:f|ht)tps?\:\/\//.test(url)) {
-        url = 'http://' + url;
-    }
-
-    return url;
-};
-
-app.use(serveStatic(__dirname + "/dist"));
+app.use(serveStatic(path.join(__dirname + "/dist")));
 app.listen(port);
 console.log('server started '+ port);
 
@@ -23,24 +14,25 @@ app.get('/', function(req, res) {
     console.log('test', username,password);
 
     (async() => {
+        /*
         const browser = await puppeteer.launch({
             args: ['--no-sandbox', '--disable-setuid-sandbox'],
             headless: false
         });
         const page = await browser.newPage();
-        /*
         await run(username,password,page,browser, res);
         await page.screenshot().then(function(buffer) {
             res.setHeader('Content-Disposition', 'attachment;filename="' + 'test' + '.png"');
             res.setHeader('Content-Type', 'image/png');
             res.send(buffer)
         });
-        */
 
         await browser.close();
+        */
     })();
 
 });
+
 async function run(username, password, page, browser, res) {
 //const browser = await puppeteer.launch();
 
