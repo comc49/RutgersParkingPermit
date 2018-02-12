@@ -24,6 +24,7 @@ export default {
   methods: {
     ...mapActions({
         setToken: 'session/SetToken',
+        setUID: 'session/SetUID',
     }),
     login() {
       let provider = new firebase.auth.GoogleAuthProvider();
@@ -31,6 +32,7 @@ export default {
         console.log(res)
         //this.$router.push('homePage');
         this.setToken(res.credential.accessToken);
+        this.setUID(res.user.uid);
         //axios.defaults.headers['Authorization'] = `Bearer ${res.credential.accessToken}`;
         console.log(axios.defaults.headers,'axios')
         this.$router.replace('/form');

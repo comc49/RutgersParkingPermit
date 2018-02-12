@@ -1,24 +1,29 @@
 <template>
     <div id="formPage">
         <h1>Billing Address</h1>
-        <v-form class="address-form" v-model="valid" ref="form" lazy-validation>
+        <v-form class="address-form" v-model="valid" ref="form" lazy-validation >
             <v-text-field
                 label="First Name"
                 v-model="firstName"
+                :placeholder="firstName"
                 :rules="nameRules"
                 :counter="10"
+                :disabled="saved"
                 required
             ></v-text-field>
             <v-text-field
                 label="Last Name"
                 v-model="lastName"
+                :placeholder="lastName"
                 :rules="nameRules"
+                :disabled="saved"
                 :counter="10"
                 required
             ></v-text-field>
             <v-text-field
                 label="Address"
                 v-model="address"
+                :disabled="saved"
                 :counter="10"
                 required
             ></v-text-field>
@@ -26,6 +31,7 @@
                 label="City"
                 v-model="city"
                 :rules="cityRules"
+                :disabled="saved"
                 :counter="10"
                 required
             ></v-text-field>
@@ -33,6 +39,7 @@
                 label="ZipCode"
                 v-model="zipCode"
                 :rules="zipRules"
+                :disabled="saved"
                 :counter="10"
                 required
             ></v-text-field>
@@ -40,16 +47,18 @@
                 label="E-mail"
                 v-model="email"
                 :rules="emailRules"
+                :disabled="saved"
                 required
             ></v-text-field>
             <v-select
                 label="Item"
                 v-model="select"
                 :items="items"
+                :disabled="saved"
                 :rules="[v => !!v || 'Item is required']"
                 required
             ></v-select>
-            <v-btn @click="submit" :disabled="!valid" >
+            <v-btn @click="submit" :disabled="!valid || saved" >
                 submit
             </v-btn>
             <v-btn @click="clear">clear</v-btn>
@@ -64,6 +73,7 @@ import { mapActions, mapGetters } from 'vuex';
 
 export default {
     data: () => ({
+        saved: false,
         rutgersUserName: '' ,
         rutgersPassword: '' ,
         address: '',
@@ -99,13 +109,16 @@ export default {
             'Item 4'
         ],
     }),
-    created() {
-        let addressRef = firebase.database().ref('addressData');
+    mounted() {
+        let addressRef = firebase.database().ref(`users/${this.uid}`);
         addressRef.once('value').then((snapshot) => {
-            console.log(snapshot,'snapshot')
+            let data = snapshot.val();
+            for (let key in data) {
+                this.firstName = data[key].firstName;
+                this.lastName = data[key].lastName;
+                this.saved = true;
+            }
         });
-
-
     },
   methods: {
     prepare() {
@@ -120,15 +133,26 @@ export default {
         }
     },
     submit () {
-        if (this.$refs.form.validate()) {
+        //if (this.$refs.form.validate()) {
+              // Get a key for a new Post.
+            var newPostKey = firebase.database().ref(`users/${this.uid}`).child('addressData').push().key;
+
+            // Write the new post's data simultaneously in the posts list and the user's post list.
+            var updates = {};
+            updates['/users/' + this.uid + '/' + newPostKey] = this.prepare();
+
+            return firebase.database().ref().update(updates);
+
             // Native form submission is not yet supported
             // replace this API call with a call to firebase
-            let addressRef = firebase.database().ref('addressData');
+            /*
+            let usersRef = firebase.database().ref('users');
             console.log('addressRef',addressRef)
-            addressRef.push(this.prepare()).then(function(res) {
+            usersRef.push(this.prepare()).then(function(res) {
                 console.log(res,'suuppp')
             })
-        }
+            */
+        //}
     },
     clear () {
         this.$refs.form.reset()
@@ -137,7 +161,8 @@ export default {
   },
   computed : {
       ...mapGetters({
-          token: 'session/token'
+          token: 'session/token',
+          uid: 'session/uid'
       })
 
   }
