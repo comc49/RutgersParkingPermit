@@ -1,41 +1,61 @@
 <template>
-  <div id="home-page">
-
-  </div>
+    <div id="home-page" class="red lighten-2">
+        <section id="welcome">
+            <h1>Welcome {{userInfo ? userInfo.displayName: ''}} to Rutgers Parking Permit Purchaser! </h1>
+            <v-btn color="success" @click="$router.push('/form')">Enter/Update Address</v-btn>
+            <v-btn
+                color="success"
+                :loading="loading"
+                @click="loader"
+                :disabled="loading"
+            >
+                Buy a Guest Permit
+            </v-btn>
+        </section>
+    </div>
 </template>
 
 <script>
 import firebase from 'firebase'
+import { mapGetters } from 'vuex';
 
 export default {
-  /*
-  data() {
-
+    data() {
+        return {
+            loading: false,
+        }
+    },
+    methods: {
+        loader() {
+            this.loading = !this.loading;
+            console.log(this.loading,'loading')
+            setTimeout(() => (this.loading = false), 3000)
+        },
+    },
+  computed: {
+      ...mapGetters({
+          userInfo: 'session/userInfo',
+      })
   },
-  */
-  methods: {
-  }
 }
 </script>
 
 <style lang='scss'>
-#login {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-    #logo {
-        margin-right: 1rem;
+    #home-page {
+        color: white;
+        #welcome {
+            padding-top: 10rem;
+            h1 {
+                padding: 2rem;
+                color: black;
+            }
+            button {
+                font-weight: 530;
+                color: white;
+                font-size: 1rem;
+            }
+        }
+        width: 100%;
+        height: 100%;
     }
-    #sign-in-button {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 600px;
-        border: 2px solid;
-        padding: 15px;
-        font-size: 3rem;
-    }
-}
 </style>

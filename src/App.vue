@@ -1,7 +1,9 @@
 <template>
-  <div id="app">
-    <v-app>
-      <router-view/>
+  <div id="app" >
+    <v-app class="red lighten-2">
+      <transition name="fade">
+        <router-view/>
+      </transition>
     </v-app>
   </div>
 </template>
@@ -15,6 +17,19 @@ export default {
 </script>
 
 <style lang='scss'>
+.fade-enter-active, .fade-leave-active {
+  transition-property: opacity;
+  transition-duration: .45s;
+}
+
+.fade-enter-active {
+  transition-delay: .45s;
+}
+
+.fade-enter, .fade-leave-active {
+  opacity: 0
+}
+
 body {
   width: 100%;
   height: 100%;

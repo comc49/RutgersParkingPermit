@@ -1,69 +1,72 @@
 <template>
-    <div id="formPage">
-        <h1>Billing Address</h1>
-        <v-form class="address-form" v-model="valid" ref="form" lazy-validation >
-            <v-text-field
-                label="First Name"
-                v-model="firstName"
-                :placeholder="firstName"
-                :rules="nameRules"
-                :counter="10"
-                :disabled="saved"
-                required
-            ></v-text-field>
-            <v-text-field
-                label="Last Name"
-                v-model="lastName"
-                :placeholder="lastName"
-                :rules="nameRules"
-                :disabled="saved"
-                :counter="10"
-                required
-            ></v-text-field>
-            <v-text-field
-                label="Address"
-                v-model="address"
-                :disabled="saved"
-                :counter="10"
-                required
-            ></v-text-field>
-            <v-text-field
-                label="City"
-                v-model="city"
-                :rules="cityRules"
-                :disabled="saved"
-                :counter="10"
-                required
-            ></v-text-field>
-            <v-text-field
-                label="ZipCode"
-                v-model="zipCode"
-                :rules="zipRules"
-                :disabled="saved"
-                :counter="10"
-                required
-            ></v-text-field>
-            <v-text-field
-                label="E-mail"
-                v-model="email"
-                :rules="emailRules"
-                :disabled="saved"
-                required
-            ></v-text-field>
-            <v-select
-                label="Item"
-                v-model="select"
-                :items="items"
-                :disabled="saved"
-                :rules="[v => !!v || 'Item is required']"
-                required
-            ></v-select>
-            <v-btn @click="submit" :disabled="!valid || saved" >
-                submit
-            </v-btn>
-            <v-btn @click="clear">clear</v-btn>
-        </v-form>
-    </div>
+    <section id="formPage">
+        <v-card id="form">
+            <h1>Billing Address</h1>
+            <v-form class="address-form" v-model="valid" ref="form" lazy-validation >
+                <v-text-field
+                    label="First Name"
+                    v-model="firstName"
+                    :placeholder="firstName"
+                    :rules="nameRules"
+                    :counter="10"
+                    :disabled="saved"
+                    required
+                ></v-text-field>
+                <v-text-field
+                    label="Last Name"
+                    v-model="lastName"
+                    :placeholder="lastName"
+                    :rules="nameRules"
+                    :disabled="saved"
+                    :counter="10"
+                    required
+                ></v-text-field>
+                <v-text-field
+                    label="Address"
+                    v-model="address"
+                    :disabled="saved"
+                    :counter="10"
+                    required
+                ></v-text-field>
+                <v-text-field
+                    label="City"
+                    v-model="city"
+                    :rules="cityRules"
+                    :disabled="saved"
+                    :counter="10"
+                    required
+                ></v-text-field>
+                <v-text-field
+                    label="ZipCode"
+                    v-model="zipCode"
+                    :rules="zipRules"
+                    :disabled="saved"
+                    :counter="10"
+                    required
+                ></v-text-field>
+                <v-text-field
+                    label="E-mail"
+                    v-model="email"
+                    :rules="emailRules"
+                    :disabled="saved"
+                    required
+                ></v-text-field>
+                <v-select
+                    label="Item"
+                    v-model="select"
+                    :items="items"
+                    :disabled="saved"
+                    :rules="[v => !!v || 'Item is required']"
+                    required
+                ></v-select>
+                <v-btn @click="submit" :disabled="!valid || saved" >
+                    submit
+                </v-btn>
+                <v-btn @click="clear">clear</v-btn>
+            </v-form>
+        </v-card>
+    </section>
+
 </template>
 
 <script>
@@ -172,11 +175,18 @@ export default {
 <style lang='scss'>
 #formPage {
     display: flex;
-    flex-direction: column;
+    width: 100%;
     justify-content: center;
     align-items: center;
-    padding: 2rem;
-    margin: 1rem;
+    #form {
+        display: flex;
+        flex-direction: column;
+        width: 50%;
+        height: 95vh !important;
+        padding: 2rem;
+        margin: 1rem;
+
+    }
     .address-form {
         width: 100%;
     }

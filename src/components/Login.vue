@@ -1,12 +1,13 @@
 
 <template>
-  <div id="login">
-    <a id="sign-in-button" class="button sign-in-button" @click="login">
+  <div id="login" class="red lighten-2">
+    <h1>GPNJ RUTGERS</h1>
+    <v-btn id="sign-in-button" color="success" class="sign-in-button" large @click="login">
       <svg id='logo' width="40" height="40" viewBox="0 0 24 24">
         <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"></path>
       </svg>
       SIGN IN WITH GPMAIL
-    </a>
+    </v-btn>
   </div>
 </template>
 
@@ -25,6 +26,7 @@ export default {
     ...mapActions({
         setToken: 'session/SetToken',
         setUID: 'session/SetUID',
+        setUserInfo: 'session/SetUserInfo',
     }),
     login() {
       let provider = new firebase.auth.GoogleAuthProvider();
@@ -33,9 +35,10 @@ export default {
         //this.$router.push('homePage');
         this.setToken(res.credential.accessToken);
         this.setUID(res.user.uid);
+        this.setUserInfo(res.user);
         //axios.defaults.headers['Authorization'] = `Bearer ${res.credential.accessToken}`;
         console.log(axios.defaults.headers,'axios')
-        this.$router.replace('/form');
+        this.$router.replace('/');
       })
     }
   }
@@ -45,21 +48,32 @@ export default {
 <style lang='scss'>
 #login {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100%;
     width: 100%;
+    h1 {
+      position: fixed;
+      top: 15%;
+      font-size: 5rem;
+      color: black;
+    }
     #logo {
         margin-right: 1rem;
+        fill: white;
+    }
+    button {
+      font-weight: 900;
+      color: white;
+      font-size: 1.5rem;
     }
     #sign-in-button {
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 600px;
-        border: 2px solid;
-        padding: 15px;
-        font-size: 3rem;
+        width: 400px;
+        height: 5rem;
     }
 }
 </style>

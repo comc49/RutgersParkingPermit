@@ -13,7 +13,20 @@ import store from './store/index';
 Vue.config.productionTip = false
 
 Vue.use(VueFire)
-Vue.use(Vuetify)
+Vue.use(Vuetify, {
+  theme: {
+    primary: '#C00000',
+    secondary: '#C05858',
+    accent: '#FFFFFF',
+    error: '#000000',
+    info: '#C05858',
+    success: '#C00000',
+    warning: '#C0C0C0'
+  },
+  options: {
+    themeVariations: ['primary', 'secondary']
+  }
+})
 Vue.use(Vuex)
 Vue.http = axios;
 Vue.prototype.$http = axios;
@@ -27,6 +40,34 @@ const config = {
   messagingSenderId: '1055963578231'
 }
 firebase.initializeApp(config)
+
+/*
+let token = localStorage.getItem('token');
+let uid = localStorage.getItem('uid');
+*/
+
+let token;
+let uid;
+
+if (token) {
+  store.dispatch('session/SetToken',token);
+}
+if (uid) {
+  store.dispatch('session/SetUID',uid);
+}
+router.beforeEach((to,from,next) => {
+  if (!store.getters['session/uid']) {
+    if (to.path !== '/login') {
+      console.log('go to login')
+      next('/login');
+    } else {
+      console.log('next')
+      next();
+    }
+  }
+  console.log(to,from,'sup)');
+    next();
+});
 
 /* eslint-disable no-new */
 new Vue({

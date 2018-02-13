@@ -8,21 +8,30 @@ const store = new Vuex.Store({
     state: {
         token: '',
         uid: null,
+        userInfo: null,
     },
     mutations: {
         'session/token' : function(state, token) {
-        state.token = token;
+            state.token = token;
+            localStorage.setItem('token',token);
         },
         'session/uid' : function(state, uid) {
-        state.uid = uid;
+            state.uid = uid;
+            localStorage.setItem('uid', uid);
+        },
+        'session/userInfo' : function(state, userInfo) {
+            state.userInfo = userInfo;
         },
     },
     getters:  {
         'session/token' (state) {
-        return state.token;
+            return state.token;
         },
         'session/uid' (state) {
-        return state.uid;
+            return state.uid;
+        },
+        'session/userInfo' (state) {
+            return state.userInfo;
         },
     },
     actions:  {
@@ -33,6 +42,10 @@ const store = new Vuex.Store({
         'session/SetUID' ({commit}, uid) {
             console.log('uid',uid)
             commit('session/uid', uid);
+        },
+        'session/SetUserInfo' ({commit}, userInfo) {
+            console.log('userInfo',userInfo)
+            commit('session/userInfo', userInfo);
         },
     },
 });
