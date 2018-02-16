@@ -48,11 +48,14 @@ export default {
 <style lang='scss'>
 #login {
     display: flex;
+    z-index: 1000;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100%;
-    width: 100%;
+    top: 0;
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
     h1 {
       position: fixed;
       top: 15%;
@@ -67,6 +70,7 @@ export default {
       font-weight: 900;
       color: white;
       font-size: 1.5rem;
+      margin-bottom: 8rem;
     }
     #sign-in-button {
         display: flex;

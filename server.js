@@ -1,21 +1,32 @@
 const express = require('express');
 const puppeteer = require('puppeteer');
+var cors = require('cors')
 var path = require('path')
+var bodyParser = require('body-parser');
 var serveStatic = require('serve-static');
 
 const app = express();
-var port = process.env.PORT || 4040;
-console.log(port,'port')
-
-console.log(serveStatic(path.join(__dirname + "/dist")))
+app.use(cors());
 app.use(serveStatic(path.join(__dirname + "/dist")));
-app.listen(5000);
-console.log('server started '+ port);
+app.use(bodyParser.json());
 
-app.get('/', function(req, res) {
+var port = process.env.PORT || 5000;
+app.listen(port, function() {
+    console.log('App listening on port ' + port)
+})
+
+
+app.post('/buyPermit', function(req, res) {
+    console.log(req.body,'req')
+    res.send('success');
+});
+
+app.get('/testing', function(req, res) {
+    /*
     var username = req.query.i;
     var password = req.query.w;
-    console.log('test', username,password);
+    */
+   res.send({testing: 'test'});
 
         /*
     (async() => {
@@ -192,7 +203,3 @@ await page.waitForSelector('input');
 
 
 }
-
-app.listen(port, function() {
-    console.log('App listening on port ' + port)
-})

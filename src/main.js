@@ -28,8 +28,10 @@ Vue.use(Vuetify, {
   }
 })
 Vue.use(Vuex)
+axios.defaults.baseURL = process.env.API;
 Vue.http = axios;
 Vue.prototype.$http = axios;
+
 
 const config = {
   apiKey: 'AIzaSyD2OtZb77QTn-STDL0RXxSTqJtF5q07IOo',
@@ -58,15 +60,12 @@ if (uid) {
 router.beforeEach((to,from,next) => {
   if (!store.getters['session/uid']) {
     if (to.path !== '/login') {
-      console.log('go to login')
       next('/login');
     } else {
-      console.log('next')
       next();
     }
   }
-  console.log(to,from,'sup)');
-    next();
+  next();
 });
 
 /* eslint-disable no-new */

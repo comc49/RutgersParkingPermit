@@ -22,6 +22,9 @@ const store = new Vuex.Store({
         'session/userInfo' : function(state, userInfo) {
             state.userInfo = userInfo;
         },
+        'session/userFormData' : function(state, userFormData) {
+            state.userFormData = userFormData ;
+        },
     },
     getters:  {
         'session/token' (state) {
@@ -32,6 +35,9 @@ const store = new Vuex.Store({
         },
         'session/userInfo' (state) {
             return state.userInfo;
+        },
+        'session/userFormData' (state) {
+            return state.userFormData;
         },
     },
     actions:  {
@@ -46,6 +52,10 @@ const store = new Vuex.Store({
         'session/SetUserInfo' ({commit}, userInfo) {
             console.log('userInfo',userInfo)
             commit('session/userInfo', userInfo);
+        },
+        'session/SetUserFormData' ({commit}, userFormData) {
+            console.log('userFormData',userFormData)
+            commit('session/userFormData', userFormData);
         },
     },
 });

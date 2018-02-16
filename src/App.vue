@@ -19,11 +19,11 @@ export default {
 <style lang='scss'>
 .fade-enter-active, .fade-leave-active {
   transition-property: opacity;
-  transition-duration: .45s;
+  transition-duration: .65s;
 }
 
 .fade-enter-active {
-  transition-delay: .45s;
+  transition-delay: .65s;
 }
 
 .fade-enter, .fade-leave-active {
@@ -37,8 +37,9 @@ body {
   margin: 0;
 }
 #app {
+  top: 0;
+  position: absolute;
   width: 100%;
-  height: 100%;
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
