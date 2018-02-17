@@ -1,9 +1,16 @@
 const express = require('express');
 const puppeteer = require('puppeteer');
+const dotenv = require('dotenv');
 var cors = require('cors')
 var path = require('path')
 var bodyParser = require('body-parser');
 var serveStatic = require('serve-static');
+
+const result = dotenv.config()
+
+if (result.error) {
+  throw result.error
+}
 
 const app = express();
 app.use(cors());
