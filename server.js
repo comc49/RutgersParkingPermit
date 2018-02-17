@@ -34,14 +34,14 @@ app.listen(port, function() {
 
 app.post('/buyPermit', function(req, res) {
     console.log(req.body)
-    buyPermit(req.body);
+    buyPermit(req.body,res);
 });
 
 app.post('/key', function(req, res) {
     res.send(process.env.SECRET_KEY);
 });
 
-async function buyPermit(CREDS) {
+async function buyPermit(CREDS,res) {
     const browser = await puppeteer.launch({
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
@@ -118,17 +118,17 @@ async function buyPermit(CREDS) {
     await page.waitForNavigation({timeout: 3000}).then(...resolveThen(85));
     console.log('Get Permit')
     await page.click(GET_PERMIT_BUTTON_SELECTOR);
-    await page.waitForSelector(NEXT_BUTTON_SELECTOR);
+    await page.waitForNavigation({timeout: 3000}).then(...resolveThen(121));
 
     await page.click(NEXT_BUTTON_SELECTOR);
-    await page.waitForSelector(NEXT_BUTTON_SELECTOR);
+    await page.waitForNavigation({timeout: 3000}).then(...resolveThen(124));
 
     await page.click(NEXT_BUTTON_SELECTOR);
-    await page.waitForSelector(AGREE_CHECKBOX_SELECTOR);
+    await page.waitForNavigation({timeout: 3000}).then(...resolveThen(127));
 
     await page.click(AGREE_CHECKBOX_SELECTOR);
     await page.click(NEXT_BUTTON_SELECTOR);
-    await page.waitForNavigation({timeout: 3000}).then(...resolveThen(98));
+    await page.waitForNavigation({timeout: 3000}).then(...resolveThen(131));
 
     // click next month
     let effective_date_tr = page.$('#ctl00_ctl01_MainContentPlaceHolder_T2Main_calEffectiveDate > tbody > tr');
