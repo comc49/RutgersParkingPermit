@@ -28,6 +28,7 @@
 
 <script>
 import firebase from 'firebase'
+import CryptoJS from 'crypto-js';
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
@@ -35,6 +36,9 @@ export default {
         return {
             loading: false,
             userFormDataAvailable: false,
+            key: null,
+            carPlate: 'k53jcx',
+            lot: 'livi',
         }
     },
     mounted() {
@@ -43,9 +47,17 @@ export default {
             addressRef.once('value').then((snapshot) => {
                 let data = snapshot.val();
                 this.userFormDataAvailable = true;
+                console.log("setting the dang mapsetter ",data)
+
                 this.setUserFormData(data);
+                this.$nextTick(() => {
+                    console.log('syupsdufpsdf',this.userFormData);
+                })
             });
         }
+        this.$http.post('/key').then((res) => {
+            this.key = res.data;
+        })
     },
     methods: {
         ...mapActions({
@@ -54,10 +66,21 @@ export default {
         buyPermit() {
             this.loading = !this.loading;
             if (this.userFormDataAvailable) {
-                this.$http.post('/buyPermit',this.userFormData).then((res) => {
+                let bytesCC  = CryptoJS.AES.decrypt(this.userFormData.visaCC.toString(), this.key);
+                let bytesCCCVV2  = CryptoJS.AES.decrypt(this.userFormData.visaCCCVV2.toString(), this.key);
+                let bytesRutgersPassword  = CryptoJS.AES.decrypt(this.userFormData.rutgersPassword.toString(), this.key);
+                let body = {
+                    ...this.userFormData,
+                    visaCC: bytesCC.toString(CryptoJS.enc.Utf8),
+                    visaCCCVV2: bytesCCCVV2.toString(CryptoJS.enc.Utf8),
+                    rutgersPassword: bytesRutgersPassword.toString(CryptoJS.enc.Utf8),
+                    carPlate: this.carPlate,
+                    lot: this.lot,
+                }
+                this.$http.post('/buyPermit', body).then((res) => {
                     this.loading = false;
                     console.log(res,'res from buying permit');
-                }) 
+                })
             }
         },
     },

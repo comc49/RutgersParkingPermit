@@ -182,6 +182,7 @@ export default {
         email: '',
         key: null,
         valid: true,
+        fab: false,
         nameRules: [
             (v) => !!v || 'Name is required',
             (v) => v && v.length <= 10 || 'Name must be less than 10 characters'
@@ -314,6 +315,7 @@ export default {
         font-size: 1rem;
     }
     .fixedButton {
+        width: 10rem;
         position: fixed;
         top: 2rem;
         right: 2rem;
