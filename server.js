@@ -44,7 +44,6 @@ app.post('/key', function(req, res) {
 async function buyPermit(CREDS) {
     const browser = await puppeteer.launch({
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        headless: false
     });
     /*
     */
