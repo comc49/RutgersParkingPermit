@@ -46,9 +46,6 @@ async function buyPermit(CREDS) {
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
     /*
-    */
-    //const browser = await puppeteer.launch();
-    /*
     const browser = await puppeteer.launch({
         headless: false
       });
