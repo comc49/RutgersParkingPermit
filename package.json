@@ -11,7 +11,7 @@
     "test": "npm run unit",
     "lint": "eslint --ext .js,.vue src test/unit",
     "build": "node build/build.js",
-    "deploy": "yarn build; git add *; git commit -m 'added dist'; git push; git push heroku master"
+    "deploy": "run(){ yarn build; git add *; git commit -m '$1'; git push; git push heroku master; }; run"
   },
   "dependencies": {
     "axios": "^0.17.1",
