@@ -105,20 +105,20 @@
         </div>
               <v-speed-dial
         v-model="fab"
-        :top="top"
-        :bottom="bottom"
-        :right="right"
-        :left="left"
-        :direction="direction"
-        :open-on-hover="hover"
-        :transition="transition"
+        :top="false"
+        :bottom="true"
+        :right="true"
+        :left="false"
+        direction="top"
+        :open-on-hover="true"
+        transition="scale-transition"
       >
         <v-btn
           slot="activator"
           color="blue darken-2"
           dark
           fab
-          hover
+          :hover="true"
           v-model="fab"
         >
           <v-icon>account_circle</v-icon>
@@ -163,6 +163,7 @@ import { mapActions, mapGetters } from 'vuex';
 export default {
     data: () => ({
         saved: false,
+        fab: false,
         address: '',
         firstName: '',
         hideFormInput: true,
