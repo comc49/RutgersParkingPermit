@@ -157,7 +157,7 @@ export default {
             this.$http.post('/key').then((res) => {
                 this.key = res.data;
                 let bytesCC  = CryptoJS.AES.decrypt(this.userFormData.visaCC.toString(), this.key);
-                let bytesCCCVV2  = CryptoJS.AES.decrypt(this.userFormData.visaCC.toString(), this.key);
+                let bytesCCCVV2  = CryptoJS.AES.decrypt(this.userFormData.visaCCCVV2.toString(), this.key);
                 let bytesRutgersPassword  = CryptoJS.AES.decrypt(this.userFormData.visaCC.toString(), this.key);
                 this.rutgersPassword = bytesRutgersPassword.toString(CryptoJS.enc.Utf8);
                 this.visaCC = bytesCC.toString(CryptoJS.enc.Utf8);
