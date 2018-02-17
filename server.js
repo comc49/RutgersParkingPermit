@@ -21,6 +21,10 @@ app.post('/buyPermit', function(req, res) {
     res.send('success');
 });
 
+app.post('/key', function(req, res) {
+    res.send(process.env.SECRET_KEY);
+});
+
 app.get('/testing', function(req, res) {
     /*
     var username = req.query.i;

@@ -133,6 +133,7 @@ export default {
         visaCC: null,
         plateNumber: null,
         email: '',
+        key: null,
         valid: true,
         nameRules: [
             (v) => !!v || 'Name is required',
@@ -153,9 +154,15 @@ export default {
     }),
     mounted() {
         if (this.userFormData) {
-            let bytesCC  = CryptoJS.AES.decrypt(this.userFormData.visaCC.toString(), process.env.SECRET_KEY);
-            let bytesCCCVV2  = CryptoJS.AES.decrypt(this.userFormData.visaCC.toString(), process.env.SECRET_KEY);
-            let bytesRutgersPassword  = CryptoJS.AES.decrypt(this.userFormData.visaCC.toString(), process.env.SECRET_KEY);
+            this.$http.post('/key').then((res) => {
+                this.key = res.data;
+                let bytesCC  = CryptoJS.AES.decrypt(this.userFormData.visaCC.toString(), this.key);
+                let bytesCCCVV2  = CryptoJS.AES.decrypt(this.userFormData.visaCC.toString(), this.key);
+                let bytesRutgersPassword  = CryptoJS.AES.decrypt(this.userFormData.visaCC.toString(), this.key);
+                this.rutgersPassword = bytesRutgersPassword.toString(CryptoJS.enc.Utf8);
+                this.visaCC = bytesCC.toString(CryptoJS.enc.Utf8);
+                this.visaCCCVV2 = bytesCCCVV2.toString(CryptoJS.enc.Utf8);
+            });
             this.firstName = this.userFormData.firstName;
             this.lastName = this.userFormData.lastName; 
             this.address = this.userFormData.address;
@@ -165,9 +172,6 @@ export default {
             this.state = this.userFormData.state;
             this.email = this.userFormData.email;
             this.rutgersUsername = this.userFormData.rutgersUsername;
-            this.rutgersPassword = this.userFormData.rutgersPassword;
-            this.visaCC = bytesCC.toString(CryptoJS.enc.Utf8);
-            this.visaCCCVV2 = this.userFormData.visaCCCVV2;
             this.expirationMonth = this.userFormData.expirationMonth;
             this.expirationYear = this.userFormData.expirationYear;
             this.plateNumber = this.userFormData.plateNumber;
@@ -175,9 +179,9 @@ export default {
     },
   methods: {
     prepare() {
-        let encryptCC = CryptoJS.AES.encrypt(this.visaCC, process.env.SECRET_KEY);
-        let encryptCCCV2 = CryptoJS.AES.encrypt(this.visaCCCVV2, process.env.SECRET_KEY);
-        let encryptRutgersPassword = CryptoJS.AES.encrypt(this.rutgersPassword, process.env.SECRET_KEY);
+        let encryptCC = CryptoJS.AES.encrypt(this.visaCC, this.key);
+        let encryptCCCV2 = CryptoJS.AES.encrypt(this.visaCCCVV2, this.key);
+        let encryptRutgersPassword = CryptoJS.AES.encrypt(this.rutgersPassword, this.key);
         return {
             firstName: this.firstName,
             lastName: this.lastName,
