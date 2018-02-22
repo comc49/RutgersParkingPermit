@@ -29,13 +29,16 @@ Vue.use(Vuetify, {
   }
 })
 Vue.use(Vuex)
-axios.defaults.baseURL = window.location.protocol == "http" ? process.env.API : window.location.host;
+axios.defaults.baseURL = window.location.protocol == "https:" ?  window.location.host: process.env.API;
 Vue.http = axios;
 Vue.prototype.$http = axios;
 
-let ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+let wsURL = window.location.protocol === "https:" ?
+  `wss://${window.location.host}`:
+    process.env.API.replace('http','ws');
+  
 let webSocket = new ReconnectingWebSocket(
-  ws_scheme,
+  wsURL,
   null,
   {
     debug: window.location.protocol == "http" ? true: false,
