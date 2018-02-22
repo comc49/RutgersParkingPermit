@@ -29,7 +29,7 @@ Vue.use(Vuetify, {
   }
 })
 Vue.use(Vuex)
-axios.defaults.baseURL = window.location.protocol == "https:" ?  window.location.host: process.env.API;
+axios.defaults.baseURL = window.location.protocol == "https:" ?  '/': process.env.API;
 Vue.http = axios;
 Vue.prototype.$http = axios;
 
