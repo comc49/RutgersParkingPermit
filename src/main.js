@@ -29,24 +29,22 @@ Vue.use(Vuetify, {
   }
 })
 Vue.use(Vuex)
-axios.defaults.baseURL = process.env.API;
+axios.defaults.baseURL = window.location.protocol == "http" ? process.env.API : window.location.host;
 Vue.http = axios;
 Vue.prototype.$http = axios;
 
-let wsURL = process.env.NODE_ENV == 'development' ?
-  process.env.API.replace('http','ws'):
-    process.env.API.replace('https','ws');
-
+let ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
 let webSocket = new ReconnectingWebSocket(
-  wsURL,
+  ws_scheme,
   null,
   {
-    debug: process.env.NODE_ENV == 'development' ? true: false,
+    debug: window.location.protocol == "http" ? true: false,
     reconnectInterval: 3000
   }
 );
 
 store.dispatch('session/SetWebSocket', webSocket);
+
 
 const config = {
   apiKey: 'AIzaSyD2OtZb77QTn-STDL0RXxSTqJtF5q07IOo',
