@@ -15,13 +15,64 @@
             <v-btn
                 class="headline"
                 color="success"
-                :loading="loading"
-                @click="buyPermit"
-                :disabled="loading"
+                @click="dialog = true"
                 large
             >
                 Buy a Guest Permit
             </v-btn>
+    <v-dialog v-model="dialog" persistent max-width="500px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">Buy Rutgers Guest Parking Permit</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container grid-list-md>
+            <v-layout wrap>
+                <v-flex xs12>
+                        <p class="text-lg-center red">NOTE:</p>
+                        <p class="text-lg-center">To purchase the guest permit, You need to have your Rutgers parking account registered and your vehicle added</p>
+                </v-flex>
+              <v-flex xs12 sm6>
+                <v-select
+                  label="Campus Lot"
+                  autocomplete
+                  required
+                  :items="lots">
+                </v-select>
+              </v-flex>
+              <v-flex xs12 sm6>
+                    <v-text-field label="Vehicle Plate Number" v-model="plateNumber" type="text" required></v-text-field>
+              </v-flex>
+              <v-flex xs12>
+                  <v-card-text class="d-block green--text py-0" v-for="msg in msgs">{{msg}}</v-card-text>
+              </v-flex>
+              <v-flex xs12>
+                      <v-card-text>
+                          Currently this application only supports purchasing
+                          today's guest permit. 
+                          <br>
+                          <small>If there is a need I can add a feature where you can buy a permit for a date range </small>
+                      </v-card-text>
+              </v-flex>
+            </v-layout>
+          </v-container>
+          <small>*indicates required field</small>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="secondary darken-1" flat @click.native="dialog = false">Close</v-btn>
+          <v-btn v-if="!showConfirm" color="secondary darken-1" flat @click.native="showConfirm=true">Buy</v-btn>
+          <v-btn
+            v-if="showConfirm"
+            color="green darken-1"
+            flat
+            @click.native="buyPermit"
+            :loading="loading"
+          >Confirm</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
         </section>
     </div>
 </template>
@@ -37,8 +88,13 @@ export default {
             loading: false,
             userFormDataAvailable: false,
             key: null,
-            carPlate: 'k53jcx',
-            lot: 'livi',
+            lot: null,
+            plateNumber: null,
+            showConfirm: false,
+            lots: ['cook', 'livi', 'busch', 'doug' ],
+            exampleSocket: null,
+            msgs: [],
+            dialog: false,
         }
     },
     mounted() {
@@ -47,24 +103,36 @@ export default {
             addressRef.once('value').then((snapshot) => {
                 let data = snapshot.val();
                 this.userFormDataAvailable = true;
-                console.log("setting the dang mapsetter ",data)
-
-                this.setUserFormData(data);
-                this.$nextTick(() => {
-                    console.log('syupsdufpsdf',this.userFormData);
-                })
+                if (data) {
+                    this.setUserFormData(data);
+                }
             });
         }
-        this.$http.post('/key').then((res) => {
-            this.key = res.data;
-        })
+        this.$http.post('/key').then(
+            (res) => {
+                this.key = res.data;
+            },
+            (err) => {
+                this.$router.error = 'cannot get the decrypt key'
+                this.$router.push('/error');
+        });
+        this.webSocket.onmessage = this.getMessage;
     },
     methods: {
         ...mapActions({
             setUserFormData: 'session/SetUserFormData',
         }),
+        testClick() {
+            this.$http.get('/test').then(() => {
+                console.log('sent to server');
+            });
+        },
+        getMessage(event) {
+            console.log(event.data,'event data!!!')
+            this.msgs.push(event.data) 
+        },
         buyPermit() {
-            this.loading = !this.loading;
+            this.loading = true;
             if (this.userFormDataAvailable) {
                 let bytesCC  = CryptoJS.AES.decrypt(this.userFormData.visaCC.toString(), this.key);
                 let bytesCCCVV2  = CryptoJS.AES.decrypt(this.userFormData.visaCCCVV2.toString(), this.key);
@@ -74,12 +142,16 @@ export default {
                     visaCC: bytesCC.toString(CryptoJS.enc.Utf8),
                     visaCCCVV2: bytesCCCVV2.toString(CryptoJS.enc.Utf8),
                     rutgersPassword: bytesRutgersPassword.toString(CryptoJS.enc.Utf8),
-                    carPlate: this.carPlate,
+                    plateNumber: this.plateNumber,
                     lot: this.lot,
                 }
                 this.$http.post('/buyPermit', body).then((res) => {
                     this.loading = false;
+                    this.dialog = false;
                     console.log(res,'res from buying permit');
+                },
+                (err) => {
+                    this.msg = err;
                 })
             }
         },
@@ -89,8 +161,17 @@ export default {
           userInfo: 'session/userInfo',
           userFormData: 'session/userFormData',
           uid: 'session/uid',
+          webSocket: 'session/webSocket',
       }),
   },
+  watch: {
+      'dialog': function(dialog){
+          if (!dialog) {
+              this.showConfirm = false;
+              this.msgs = [];
+          }
+      }
+  }
 }
 </script>
 

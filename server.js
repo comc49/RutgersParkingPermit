@@ -1,11 +1,15 @@
 const express = require('express');
+const url = require('url');
 const puppeteer = require('puppeteer');
 const dotenv = require('dotenv');
+const http = require('http');
 const moment = require('moment');
+const WebSocket = require('ws');
 var cors = require('cors')
 var path = require('path')
 var bodyParser = require('body-parser');
 var serveStatic = require('serve-static');
+var puppeteerRunning = false;
 
 const result = dotenv.config()
 
@@ -17,24 +21,66 @@ app.use(cors());
 app.use(serveStatic(path.join(__dirname + "/dist")));
 app.use(bodyParser.json());
 
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+const port = process.env.PORT || 5000;
+
+let webSocket = null;
+wss.on('connection', function connection(ws, req) {
+  webSocket = ws;
+  const location = url.parse(req.url, true);
+  // You might use location.query.access_token to authenticate or share sessions
+  // or req.headers.cookie (see http://stackoverflow.com/a/16395220/151312)
+  ws.on('message', function incoming(message) {
+    console.log('received: %s', message);
+    ws.send('something');
+  });
+  ws.on('error', function incoming(error) {
+      console.log('error!!',error)
+  })
+});
+
+server.listen(port, function() {
+    console.log('Listening on %d', server.address().port);
+})
+
+const interval = setInterval(function ping() {
+    wss.clients.forEach(function each(ws) {
+      if (ws.isAlive === false) return ws.terminate();
+  
+      ws.isAlive = false;
+      ws.ping(noop);
+    });
+}, 30000);
+
+const log = (logMessage, lineNumber) => {
+    if (webSocket) {
+        webSocket.send(logMessage);
+    } else {
+        console.log(logMessage,lineNumber)
+    }
+}
+
+function heartbeat() {
+    this.isAlive = true;
+}
+
+function noop() {}
+
 function delay(timeout) {
     return new Promise((resolve) => {
       setTimeout(resolve, timeout);
     });
 }
 function resolveThen(line = -1) {
-    return [(res)=>console.log(`resolved ${line}`),(err)=>console.log(`error ${line}`)];
+    return [(res)=>log(`resolved ${line}`),(err)=>log(`error ${line}`)];
 }
 
-var port = process.env.PORT || 5000;
-app.listen(port, function() {
-    console.log('App listening on port ' + port)
-})
-
-
 app.post('/buyPermit', function(req, res) {
-    console.log(req.body)
-    buyPermit(req.body,res);
+    if (!puppeteerRunning) {
+        console.log(req.body)
+        buyPermit(req.body,res);
+    }
 });
 
 app.post('/key', function(req, res) {
@@ -42,9 +88,13 @@ app.post('/key', function(req, res) {
 });
 
 async function buyPermit(CREDS,res) {
+    puppeteerRunning = true;
+    log("Opening headless Chrome using Puppeteer")
     const browser = await puppeteer.launch({
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        headless: false
     });
+    log("Chrome launched")
     /*
     const browser = await puppeteer.launch({
         headless: false
@@ -53,6 +103,7 @@ async function buyPermit(CREDS,res) {
     const page = await browser.newPage();
 
     await page.goto('https://rudots.t2hosted.com/cmn/auth_guest.aspx');
+    log("Navigated the Rutgers parking website")
 
     const USERNAME_SELECTOR = '#ctl00_ctl01_MainContentPlaceHolder_T2Main_txtLogin';
     const PASSWORD_SELECTOR = '#ctl00_ctl01_MainContentPlaceHolder_T2Main_txtPassword';
@@ -105,6 +156,7 @@ async function buyPermit(CREDS,res) {
     const ACCOUNT_AUTHORIZATION_FIRST_NAME_SELECTOR = '#ctl00_SheetContentPlaceHolder_txtFirstName';
     const ACCOUNT_AUTHORIZATION_LAST_NAME_SELECTOR = '#ctl00_SheetContentPlaceHolder_txtLastName';
     const ACCOUNT_AUTHORIZATION_SUBMIT_ORDER_SELECTOR = '#ctl00_SheetContentPlaceHolder_btnPlaceOrder';
+    const TIMEOUT = 3000;
 
 
 
@@ -115,20 +167,20 @@ async function buyPermit(CREDS,res) {
     await page.keyboard.type(CREDS.rutgersPassword);
 
     await page.click(LOGIN_BUTTON_SELECTOR);
-    await page.waitForNavigation({timeout: 3000}).then(...resolveThen(85));
-    console.log('Get Permit')
+    await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(85));
+    log('Successfully Logged in')
     await page.click(GET_PERMIT_BUTTON_SELECTOR);
-    await page.waitForNavigation({timeout: 3000}).then(...resolveThen(121));
+    await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(121));
 
     await page.click(NEXT_BUTTON_SELECTOR);
-    await page.waitForNavigation({timeout: 3000}).then(...resolveThen(124));
+    await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(124));
 
     await page.click(NEXT_BUTTON_SELECTOR);
-    await page.waitForNavigation({timeout: 3000}).then(...resolveThen(127));
+    await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(127));
 
     await page.click(AGREE_CHECKBOX_SELECTOR);
     await page.click(NEXT_BUTTON_SELECTOR);
-    await page.waitForNavigation({timeout: 3000}).then(...resolveThen(131));
+    await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(131));
 
     // click next month
     let effective_date_tr = page.$('#ctl00_ctl01_MainContentPlaceHolder_T2Main_calEffectiveDate > tbody > tr');
@@ -190,7 +242,7 @@ async function buyPermit(CREDS,res) {
     await page.waitForSelector(NEXT_BUTTON_SELECTOR);
 
     await page.click(NEXT_BUTTON_SELECTOR);
-    await page.waitForSelector(NEXT_BUTTON_SELECTOR);
+    await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(200));
 
     // function for picking the car with the plate number the user provided
     // fully functional, enable when in production
@@ -201,7 +253,7 @@ async function buyPermit(CREDS,res) {
             tr.childNodes.forEach((td,tdIndex) => {
                 if (td.firstElementChild) {
                     let innerText = td.firstElementChild.innerText
-                    if (innerText != '' && innerText != CREDS.carPlate.toUpperCase()) {
+                    if (innerText != '' && innerText != CREDS.plateNumber.toUpperCase()) {
                         tr.firstElementChild.firstElementChild.click();
                     }
                 }
@@ -219,34 +271,36 @@ async function buyPermit(CREDS,res) {
     */
 
     await page.click(NEXT_BUTTON_SELECTOR);
-    await page.waitForSelector(NEXT_BUTTON_SELECTOR);
+    await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(223));
 
 
-    console.log("Choose the Location")
+    log("Choose the Location")
     // livi, busch, doug, cook
     await page.select(LOT_INPUT_SELECTOR,lotList[CREDS.lot]);
-    await page.waitForSelector(NEXT_BUTTON_SELECTOR);
+    log('lot list ',lotList[CREDS.lot]);
+    await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(230));
     await page.click(NEXT_BUTTON_SELECTOR);
-    await page.waitForSelector(PAY_NOW_SELECTOR);
-    console.log("View Cart Pay now")
+    await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(232));
+    await page.waitForSelector('input').then(...resolveThen(284));
+    log("View Cart Pay now")
 
     await page.click(PAY_NOW_SELECTOR);
-    console.log("View Cart Pay now 2")
+    log("View Cart Pay now 2")
     await page.waitForSelector('input');
-    console.log("View Cart Pay now 3")
+    log("View Cart Pay now 3")
     await page.waitForSelector('input');
-    console.log("View Cart Pay now 4")
+    log("View Cart Pay now 4")
 
     await page.click('#cmdNext');
-    console.log("View Cart Pay now 5")
+    log("View Cart Pay now 5")
     await page.waitForSelector('input');
-    console.log("View Cart Pay now 6")
-    await page.waitForNavigation({timeout: 3000}).then(...resolveThen(191));
+    log("View Cart Pay now 6")
+    await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(246));
     await page.waitForSelector(CONTINUE_SELECTOR);
     await page.focus(CONTINUE_SELECTOR);
     await page.click(CONTINUE_SELECTOR);
-    await page.waitForNavigation({timeout: 3000}).then(...resolveThen(195));
-    console.log("View Cart Pay now 7")
+    await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(250));
+    log("View Cart Pay now 7")
     /*
     await page.evaluate((contSelector) => {
         console.log(contSelector)
@@ -255,17 +309,17 @@ async function buyPermit(CREDS,res) {
         input.click();
     },CONTINUE_SELECTOR);
     */
-    console.log("View Cart Pay now 8")
-    console.log("View Cart Pay now 9")
-    console.log("Check out process order details")
+    log("View Cart Pay now 8")
+    log("View Cart Pay now 9")
+    log("Check out process order details")
     await page.click(PAY_WITH_CARD_SELECTOR);
     await page.waitForSelector(CARD_TYPE_DROPDOWN_SELECTOR);
-    console.log("payment");
+    log("payment");
     await page.select(CARD_TYPE_DROPDOWN_SELECTOR,'V');
 
     // add code for adding card info & billing address info
-    await page.waitForNavigation({timeout: 5000}).then(...resolveThen(214));
-    await page.waitForNavigation({timeout: 5000}).then(...resolveThen(215));
+    await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(214));
+    await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(215));
 
     // CARD INFO
     await page.click(FIRST_NAME_ON_CARD_SELECTOR);
@@ -306,22 +360,22 @@ async function buyPermit(CREDS,res) {
     await page.select(STATE_DROPDOWN_SELECTOR,'NJ');
 
     // wait to see what i typed REMOVE ON PRODUCTION
-    await page.waitForNavigation({timeout: 5000}).then(...resolveThen(256));
+    await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(256));
 
     await page.focus(CONTINUE_SELECTOR);
     await page.click(CONTINUE_SELECTOR);
 
-    console.log('order summary');
+    log('order summary');
 
-    await page.waitForNavigation({timeout: 3000}).then(...resolveThen(263));
+    await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(263));
 
     await page.focus(CONTINUE_SELECTOR);
     await page.click(CONTINUE_SELECTOR);
 
-    console.log('order confirmation')
+    log('order confirmation')
 
     
-    await page.waitForNavigation({timeout: 3000}).then(...resolveThen(271));
+    await page.waitForNavigation({timeout: 3000 }).then(...resolveThen(271));
 
     await page.focus(ACCOUNT_AUTHORIZATION_CHECKBOX_SELECTOR);
     await page.click(ACCOUNT_AUTHORIZATION_CHECKBOX_SELECTOR);
@@ -346,7 +400,7 @@ async function buyPermit(CREDS,res) {
     await page.focus(ACCOUNT_AUTHORIZATION_SUBMIT_ORDER_SELECTOR);
     // enable in production
     //await page.click(ACCOUNT_AUTHORIZATION_SUBMIT_ORDER_SELECTOR);
-    console.log('order placed')
+    log('order placed')
 
     // wait for the loading page
     await page.waitForNavigation().then(...resolveThen(298));
@@ -360,3 +414,4 @@ async function buyPermit(CREDS,res) {
     });
 
     }
+

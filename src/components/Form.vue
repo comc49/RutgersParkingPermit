@@ -103,52 +103,18 @@
             <h5>{{hideFormInput ? 'Show' : 'Hide'}} Sensitive field</h5>
             <v-icon class="peek-icon" @click="hideFormInput = !hideFormInput">remove_red_eye</v-icon>
         </div>
-              <v-speed-dial
-        v-model="fab"
-        :top="false"
-        :bottom="true"
-        :right="true"
-        :left="false"
-        direction="top"
-        :open-on-hover="true"
-        transition="scale-transition"
-      >
         <v-btn
+          class="go-back"
           slot="activator"
-          color="blue darken-2"
+          color="primary"
           dark
           fab
           :hover="true"
           v-model="fab"
+          @click="$router.go(-1)"
         >
-          <v-icon>account_circle</v-icon>
-          <v-icon>close</v-icon>
+          <v-icon>arrow_back</v-icon>
         </v-btn>
-        <v-btn
-          fab
-          dark
-          small
-          color="green"
-        >
-          <v-icon>edit</v-icon>
-        </v-btn>
-        <v-btn
-          fab
-          dark
-          small
-          color="indigo"
-        >
-          <v-icon>add</v-icon>
-        </v-btn>
-        <v-btn
-          fab
-          dark
-          small
-          color="red"
-        >
-          <v-icon>delete</v-icon>
-        </v-btn>
-      </v-speed-dial>
     </section>
 
 </template>
@@ -201,35 +167,35 @@ export default {
         ],
     }),
     mounted() {
-        if (this.userFormData) {
-            this.$http.post('/key').then((res) => {
-                this.key = res.data;
+        this.$http.post('/key').then((res) => {
+            this.key = res.data;
+            if (this.userFormData) {
                 let bytesCC  = CryptoJS.AES.decrypt(this.userFormData.visaCC.toString(), this.key);
                 let bytesCCCVV2  = CryptoJS.AES.decrypt(this.userFormData.visaCCCVV2.toString(), this.key);
                 let bytesRutgersPassword  = CryptoJS.AES.decrypt(this.userFormData.rutgersPassword.toString(), this.key);
                 this.rutgersPassword = bytesRutgersPassword.toString(CryptoJS.enc.Utf8);
                 this.visaCC = bytesCC.toString(CryptoJS.enc.Utf8);
                 this.visaCCCVV2 = bytesCCCVV2.toString(CryptoJS.enc.Utf8);
-            });
-            this.firstName = this.userFormData.firstName;
-            this.lastName = this.userFormData.lastName; 
-            this.address = this.userFormData.address;
-            this.city = this.userFormData.city;
-            this.zipCode = this.userFormData.zipCode;
-            this.country = this.userFormData.country;
-            this.state = this.userFormData.state;
-            this.email = this.userFormData.email;
-            this.rutgersUsername = this.userFormData.rutgersUsername;
-            this.expirationMonth = this.userFormData.expirationMonth;
-            this.expirationYear = this.userFormData.expirationYear;
-            this.plateNumber = this.userFormData.plateNumber;
-        }
+                this.firstName = this.userFormData.firstName;
+                this.lastName = this.userFormData.lastName; 
+                this.address = this.userFormData.address;
+                this.city = this.userFormData.city;
+                this.zipCode = this.userFormData.zipCode;
+                this.country = this.userFormData.country;
+                this.state = this.userFormData.state;
+                this.email = this.userFormData.email;
+                this.rutgersUsername = this.userFormData.rutgersUsername;
+                this.expirationMonth = this.userFormData.expirationMonth;
+                this.expirationYear = this.userFormData.expirationYear;
+                this.plateNumber = this.userFormData.plateNumber;
+            }
+        });
     },
   methods: {
     prepare() {
-        let encryptCC = CryptoJS.AES.encrypt(this.visaCC, this.key);
-        let encryptCCCV2 = CryptoJS.AES.encrypt(this.visaCCCVV2, this.key);
-        let encryptRutgersPassword = CryptoJS.AES.encrypt(this.rutgersPassword, this.key);
+        let encryptCC = this.key ? CryptoJS.AES.encrypt(this.visaCC, this.key): null;
+        let encryptCCCV2 = this.key ? CryptoJS.AES.encrypt(this.visaCCCVV2, this.key): null;
+        let encryptRutgersPassword = this.key ? CryptoJS.AES.encrypt(this.rutgersPassword, this.key): null;
         return {
             firstName: this.firstName,
             lastName: this.lastName,
@@ -240,9 +206,9 @@ export default {
             state: this.state,
             email: this.email,
             rutgersUsername: this.rutgersUsername,
-            rutgersPassword: encryptRutgersPassword.toString(),
-            visaCC: encryptCC.toString(),
-            visaCCCVV2: encryptCCCV2.toString(),
+            rutgersPassword: this.key ? encryptRutgersPassword.toString(): null,
+            visaCC: this.key ? encryptCC.toString(): null,
+            visaCCCVV2: this.key ? encryptCCCV2.toString(): null,
             expirationMonth: this.expirationMonth,
             expirationYear: this.expirationYear,
             plateNumber: this.plateNumber,
@@ -257,16 +223,21 @@ export default {
     submit () {
         if (this.$refs.form.validate()) {
             // Write the new post's data simultaneously in the posts list and the user's post list.
-            firebase.database().ref(`/users/${this.uid}/addressData`).set(
-                this.prepare()
-            ).then(() => {
-               console.log('success!!') 
-            });
-        }
+            let addressData = firebase.database()
+                .ref(`/users/${this.uid}/addressData`)
+                    .set(
+                        this.prepare()
+                    ).then(() => {
+                        this.setUserFormData(this.prepare())
+                    });
+        } 
     },
     clear () {
         this.$refs.form.reset()
-    }
+    },
+    ...mapActions({
+        setUserFormData: 'session/SetUserFormData',
+    }),
 
   },
     computed : {
@@ -329,6 +300,11 @@ export default {
     }
     .address-form {
         width: 100%;
+    }
+    .go-back {
+        position: fixed;
+        right: 17vw;
+        bottom: 3rem;
     }
 }
 </style>

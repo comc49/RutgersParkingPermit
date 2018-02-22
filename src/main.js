@@ -1,14 +1,15 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue from 'vue'
-import VueFire from 'vuefire'
-import firebase from 'firebase'
-import App from './App'
-import router from './router'
-import Vuetify from 'vuetify'
-import axios from 'axios'
-import Vuex from 'vuex'
+import Vue from 'vue';
+import VueFire from 'vuefire';
+import firebase from 'firebase';
+import App from './App';
+import router from './router';
+import Vuetify from 'vuetify';
+import axios from 'axios';
+import Vuex from 'vuex';
 import store from './store/index';
+import ReconnectingWebSocket from 'reconnecting-websocket';
 
 Vue.config.productionTip = false
 
@@ -32,6 +33,16 @@ axios.defaults.baseURL = process.env.API;
 Vue.http = axios;
 Vue.prototype.$http = axios;
 
+let webSocket = new ReconnectingWebSocket(
+  process.env.API.replace('http','ws'),
+  null,
+  {
+    debug: process.env.NODE_ENV == 'development' ? true: false,
+    reconnectInterval: 3000
+  }
+);
+
+store.dispatch('session/SetWebSocket', webSocket);
 
 const config = {
   apiKey: 'AIzaSyD2OtZb77QTn-STDL0RXxSTqJtF5q07IOo',

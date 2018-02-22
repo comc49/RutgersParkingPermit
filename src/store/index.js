@@ -9,6 +9,9 @@ const store = new Vuex.Store({
         token: '',
         uid: null,
         userInfo: null,
+        webSocket: null,
+        userFormData: null,
+        key: null,
     },
     mutations: {
         'session/token' : function(state, token) {
@@ -23,7 +26,15 @@ const store = new Vuex.Store({
             state.userInfo = userInfo;
         },
         'session/userFormData' : function(state, userFormData) {
-            state.userFormData = userFormData ;
+            state.userFormData = {...userFormData} ;
+        },
+        'session/webSocket' : function(state, webSocket) {
+            state.webSocket = webSocket ;
+        },
+        'session/closeWebSocket' : function(state) {
+            if (state.webSocket) {
+                state.webSocket.close();
+            }
         },
     },
     getters:  {
@@ -39,23 +50,28 @@ const store = new Vuex.Store({
         'session/userFormData' (state) {
             return state.userFormData;
         },
+        'session/webSocket' (state) {
+            return state.webSocket;
+        },
     },
     actions:  {
         'session/SetToken' ({commit}, token) {
-            console.log('token',token)
             commit('session/token', token);
         },
         'session/SetUID' ({commit}, uid) {
-            console.log('uid',uid)
             commit('session/uid', uid);
         },
         'session/SetUserInfo' ({commit}, userInfo) {
-            console.log('userInfo',userInfo)
             commit('session/userInfo', userInfo);
         },
         'session/SetUserFormData' ({commit}, userFormData) {
-            console.log('userFormData',userFormData)
             commit('session/userFormData', userFormData);
+        },
+        'session/SetWebSocket' ({commit}, webSocket) {
+            commit('session/webSocket', webSocket);
+        },
+        'session/closeWebSocket' ({commit}) {
+            commit('session/closeWebSocket');
         },
     },
 });

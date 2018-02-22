@@ -10,9 +10,18 @@
 
 <script>
 import firebase from 'firebase'
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
-  name: 'App'
+  name: 'App',
+  methods: {
+    ...mapActions({
+      closeWebSocket: 'session/closeWebSocket',
+    })
+  },
+  beforeDestroy() {
+    this.closeWebSocket();
+  }
 }
 </script>
 
