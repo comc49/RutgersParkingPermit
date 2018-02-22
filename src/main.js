@@ -33,8 +33,12 @@ axios.defaults.baseURL = process.env.API;
 Vue.http = axios;
 Vue.prototype.$http = axios;
 
+let wsURL = process.env.NODE_ENV == 'development' ?
+  process.env.API.replace('http','ws'):
+    process.env.API.replace('https','ws');
+
 let webSocket = new ReconnectingWebSocket(
-  process.env.API.replace('http','ws'),
+  wsURL,
   null,
   {
     debug: process.env.NODE_ENV == 'development' ? true: false,
