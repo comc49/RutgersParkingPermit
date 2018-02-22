@@ -301,14 +301,6 @@ async function buyPermit(CREDS,res) {
     await page.click(CONTINUE_SELECTOR);
     await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(250));
     log("View Cart Pay now 7")
-    /*
-    await page.evaluate((contSelector) => {
-        console.log(contSelector)
-        let input = document.getElementById(contSelector);
-        console.log(input,'input')
-        input.click();
-    },CONTINUE_SELECTOR);
-    */
     log("View Cart Pay now 8")
     log("View Cart Pay now 9")
     log("Check out process order details")

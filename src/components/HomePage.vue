@@ -122,13 +122,7 @@ export default {
         ...mapActions({
             setUserFormData: 'session/SetUserFormData',
         }),
-        testClick() {
-            this.$http.get('/test').then(() => {
-                console.log('sent to server');
-            });
-        },
         getMessage(event) {
-            console.log(event.data,'event data!!!')
             this.msgs.push(event.data) 
         },
         buyPermit() {

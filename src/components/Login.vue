@@ -31,13 +31,11 @@ export default {
     login() {
       let provider = new firebase.auth.GoogleAuthProvider();
       firebase.auth().signInWithPopup(provider).then((res) => {
-        console.log(res)
         //this.$router.push('homePage');
         this.setToken(res.credential.accessToken);
         this.setUID(res.user.uid);
         this.setUserInfo(res.user);
         //axios.defaults.headers['Authorization'] = `Bearer ${res.credential.accessToken}`;
-        console.log(axios.defaults.headers,'axios')
         this.$router.replace('/');
       })
     }
