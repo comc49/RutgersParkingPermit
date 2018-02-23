@@ -43,6 +43,7 @@ wss.on('connection', function connection(ws, req) {
 server.listen(port, function() {
     console.log('Listening on %d', server.address().port);
 })
+server.timeout = 120000;
 
 const interval = setInterval(function ping() {
     wss.clients.forEach(function each(ws) {
