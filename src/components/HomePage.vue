@@ -45,7 +45,13 @@
                     <v-text-field label="Vehicle Plate Number" v-model="plateNumber" type="text" required></v-text-field>
               </v-flex>
               <v-flex xs12>
-                  <v-card-text class="d-block green--text py-0" v-for="(msg,i) in msgs" :key="i">{{msg}}</v-card-text>
+                    <v-card-text
+                        class="d-block py-0"
+                        v-bind:class="{'green--text': !msg.includes('error'),'red--text': msg.includes('error')}"
+                        v-for="(msg,i) in msgs" :key="i"
+                    >
+                        {{msg}}
+                    </v-card-text>
               </v-flex>
               <v-flex xs12>
                       <v-card-text>

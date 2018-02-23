@@ -80,6 +80,7 @@ function resolveThen(resMsg,errMsg) {
 app.post('/buyPermit', function(req, res) {
     if (!puppeteerRunning) {
         console.log(req.body)
+        res.send('running puppeteer');
         buyPermit(req.body,res);
     }
 });
@@ -93,6 +94,7 @@ async function buyPermit(CREDS,res) {
     log("Opening headless Chrome using Puppeteer")
     const browser = await puppeteer.launch({
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        //headless: false
     });
     log("Chrome launched")
     /*
