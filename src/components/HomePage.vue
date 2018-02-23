@@ -148,7 +148,6 @@ export default {
                 }
                 this.$http.post('/buyPermit', body).then((res) => {
                     this.loading = false;
-                    this.dialog = false;
                     console.log(res,'res from buying permit');
                 },
                 (err) => {
