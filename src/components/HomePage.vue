@@ -35,7 +35,7 @@
               <v-flex xs12 sm6>
                 <v-select
                   label="Campus Lot"
-                  v-modle="lot"
+                  v-model="lot"
                   autocomplete
                   required
                   :items="lots">

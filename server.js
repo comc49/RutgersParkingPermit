@@ -72,8 +72,8 @@ function delay(timeout) {
       setTimeout(resolve, timeout);
     });
 }
-function resolveThen(message) {
-    return [(res)=>log(`resolved ${message}`),(err)=>log(`error ${message}`)];
+function resolveThen(resMsg,errMsg) {
+    return [(res)=>log(`resolved ${resMsg}`),(err)=>log(`error ${errMsg}`)];
 }
 
 app.post('/buyPermit', function(req, res) {
@@ -102,7 +102,7 @@ async function buyPermit(CREDS,res) {
     const page = await browser.newPage();
 
     await page.goto('https://rudots.t2hosted.com/cmn/auth_guest.aspx');
-    log("Navigated the Rutgers parking website")
+    log("Navigated to the Rutgers parking website")
 
     const USERNAME_SELECTOR = '#ctl00_ctl01_MainContentPlaceHolder_T2Main_txtLogin';
     const PASSWORD_SELECTOR = '#ctl00_ctl01_MainContentPlaceHolder_T2Main_txtPassword';
@@ -196,7 +196,8 @@ async function buyPermit(CREDS,res) {
 
     let today = moment().format('MMMM D');
 
-    let indexes = await page.evaluate(today => {
+    let indexes;
+    await page.evaluate(today => {
         let trs = document.querySelectorAll('#ctl00_ctl01_MainContentPlaceHolder_T2Main_calEffectiveDate > tbody > tr');
         let a;
         trs.forEach((tr,i) =>{
@@ -209,7 +210,13 @@ async function buyPermit(CREDS,res) {
             }
         })
         return a;
-    },today).then(...resolveThen('Unable to pick today\'s date'));
+    },today).then((res) => {
+        indexes = res;
+        log(`Picked ${today} as the permit's effective date`)
+    },
+    (err) => {
+        log('Unable to pick today\'s date')
+    });
 
     const EFFECTIVE_DATE_SELECTOR = `#ctl00_ctl01_MainContentPlaceHolder_T2Main_calEffectiveDate > tbody > tr:nth-child(${indexes[0]}) > td:nth-child(${indexes[1]}) > a`;
     const EXPIRATION_DATE_SELECTOR = `#ctl00_ctl01_MainContentPlaceHolder_T2Main_calExpirationDate > tbody > tr:nth-child(${indexes[0]}) > td:nth-child(${indexes[1]}) > a`;
@@ -243,9 +250,10 @@ async function buyPermit(CREDS,res) {
     await page.click(NEXT_BUTTON_SELECTOR);
     await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(200));
 
+
     // function for picking the car with the plate number the user provided
     // fully functional, enable when in production
-    let trIndex = await page.evaluate((CREDS) => {
+    await page.evaluate((CREDS) => {
         let tbody = document.querySelector('#ctl00_ctl01_MainContentPlaceHolder_T2Main_dgVehicleList > tbody');
         let i;
         tbody.childNodes.forEach((tr,index) => {
@@ -258,7 +266,7 @@ async function buyPermit(CREDS,res) {
                 }
             })
         })
-    },CREDS).then(...resolveThen('unable to pick your vehicle, double check plate number'));
+    },CREDS).then(...resolveThen(`selected vehicle plate ${CREDS.plateNumber}`,'unable to pick your vehicle, double check plate number'));
 
     // unchecking extra vehicles
     // remove for production
