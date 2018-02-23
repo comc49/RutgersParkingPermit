@@ -15,7 +15,9 @@ export default {
 </script>
 
 <style lang='scss'>
-    h1:first-child {
-        margin-top: 5rem;
+    #errorPage {
+        h1:first-child {
+            margin-top: 5rem;
+        }
     }
 </style>

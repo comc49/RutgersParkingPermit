@@ -72,8 +72,8 @@ function delay(timeout) {
       setTimeout(resolve, timeout);
     });
 }
-function resolveThen(line = -1) {
-    return [(res)=>log(`resolved ${line}`),(err)=>log(`error ${line}`)];
+function resolveThen(message) {
+    return [(res)=>log(`resolved ${message}`),(err)=>log(`error ${message}`)];
 }
 
 app.post('/buyPermit', function(req, res) {
@@ -209,7 +209,7 @@ async function buyPermit(CREDS,res) {
             }
         })
         return a;
-    },today);
+    },today).then(...resolveThen('Unable to pick today\'s date'));
 
     const EFFECTIVE_DATE_SELECTOR = `#ctl00_ctl01_MainContentPlaceHolder_T2Main_calEffectiveDate > tbody > tr:nth-child(${indexes[0]}) > td:nth-child(${indexes[1]}) > a`;
     const EXPIRATION_DATE_SELECTOR = `#ctl00_ctl01_MainContentPlaceHolder_T2Main_calExpirationDate > tbody > tr:nth-child(${indexes[0]}) > td:nth-child(${indexes[1]}) > a`;
@@ -258,7 +258,7 @@ async function buyPermit(CREDS,res) {
                 }
             })
         })
-    },CREDS);
+    },CREDS).then(...resolveThen('unable to pick your vehicle, double check plate number'));
 
     // unchecking extra vehicles
     // remove for production
