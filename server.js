@@ -17,6 +17,8 @@ if (result.error) {
   throw result.error
 }
 const app = express();
+let browser = null 
+
 app.use(cors());
 app.use(serveStatic(path.join(__dirname + "/dist")));
 app.use(bodyParser.json());
@@ -36,7 +38,7 @@ wss.on('connection', function connection(ws, req) {
     ws.send('something');
   });
   ws.on('error', function incoming(error) {
-      console.log('error!!',error)
+      console.log('webSocket Error!!',error)
   })
 });
 
@@ -47,12 +49,15 @@ server.timeout = 120000;
 
 const interval = setInterval(function ping() {
     wss.clients.forEach(function each(ws) {
-      if (ws.isAlive === false) return ws.terminate();
+      if (ws.isAlive === false) {
+          console.log("IS GOING TO TERMINATE WS!")
+          return ws.terminate();
+      }
   
       ws.isAlive = false;
       ws.ping(noop);
     });
-}, 30000);
+}, 120000);
 
 const log = (logMessage, lineNumber) => {
     if (webSocket) {
@@ -74,12 +79,24 @@ function delay(timeout) {
     });
 }
 function resolveThen(resMsg,errMsg) {
-    return [(res)=>log(`resolved ${resMsg}`),(err)=>log(`error ${errMsg}`)];
+    return [(res)=>log(`resolved ${resMsg}`),(err) => {
+        log(`error ${errMsg}`);
+    }];
 }
+process.on('unhandledRejection', error => {
+    console.log('unhandledRejection', error.message);
+    if (puppeteerRunning) {
+        puppeteerRunning = false;
+        browser.close();
+        log("error FAILED TO BUY PERMIT")
+        return;
+    }
+});
+  
+
 
 app.post('/buyPermit', function(req, res) {
     if (!puppeteerRunning) {
-        console.log(req.body)
         res.send('running puppeteer');
         buyPermit(req.body,res);
     }
@@ -91,11 +108,11 @@ app.post('/key', function(req, res) {
 
 async function buyPermit(CREDS,res) {
     puppeteerRunning = true;
-    log("Opening headless Chrome using Puppeteer")
-    const browser = await puppeteer.launch({
+    browser = await puppeteer.launch({
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        //headless: false
+        headless: false
     });
+    log("Opening headless Chrome using Puppeteer")
     log("Chrome launched")
     /*
     const browser = await puppeteer.launch({
@@ -287,32 +304,26 @@ async function buyPermit(CREDS,res) {
     log("Choose the Location")
     // livi, busch, doug, cook
     await page.select(LOT_INPUT_SELECTOR,lotList[CREDS.lot]);
-    log('lot list ',lotList[CREDS.lot]);
+    log('lot list ');
     await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(230));
     await page.click(NEXT_BUTTON_SELECTOR);
     await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(232));
     await page.waitForSelector('input').then(...resolveThen(284));
-    log("View Cart Pay now")
 
     await page.click(PAY_NOW_SELECTOR);
-    log("View Cart Pay now 2")
     await page.waitForSelector('input');
-    log("View Cart Pay now 3")
     await page.waitForSelector('input');
-    log("View Cart Pay now 4")
 
     await page.click('#cmdNext');
-    log("View Cart Pay now 5")
+
     await page.waitForSelector('input');
-    log("View Cart Pay now 6")
+
     await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(246));
     await page.waitForSelector(CONTINUE_SELECTOR);
     await page.focus(CONTINUE_SELECTOR);
     await page.click(CONTINUE_SELECTOR);
     await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(250));
-    log("View Cart Pay now 7")
-    log("View Cart Pay now 8")
-    log("View Cart Pay now 9")
+
     log("Check out process order details")
     await page.click(PAY_WITH_CARD_SELECTOR);
     await page.waitForSelector(CARD_TYPE_DROPDOWN_SELECTOR);
@@ -409,11 +420,5 @@ async function buyPermit(CREDS,res) {
 
     // wait for transaction to load  completely
     await page.waitForNavigation().then(...resolveThen(301));
-    await page.screenshot().then(function(buffer) {
-        res.setHeader('Content-Disposition', 'attachment;filename="' + 'test' + '.png"');
-        res.setHeader('Content-Type', 'image/png');
-        res.send(buffer)
-    });
-
     }
 
