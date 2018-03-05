@@ -308,6 +308,7 @@ async function buyPermit(CREDS,res) {
     await page.click(NEXT_BUTTON_SELECTOR);
     await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(232));
     await page.waitForSelector('input').then(...resolveThen(284));
+    await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(311));
 
     await page.click(PAY_NOW_SELECTOR);
     await page.waitForSelector('input');
