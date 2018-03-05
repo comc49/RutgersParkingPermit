@@ -110,7 +110,6 @@ async function buyPermit(CREDS,res) {
     puppeteerRunning = true;
     browser = await puppeteer.launch({
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        headless: false
     });
     log("Opening headless Chrome using Puppeteer")
     log("Chrome launched")
@@ -420,5 +419,7 @@ async function buyPermit(CREDS,res) {
 
     // wait for transaction to load  completely
     await page.waitForNavigation().then(...resolveThen(301));
+    log("SUCCESS FULLY PURCHASED THE PERMIT")
+    log("CHECK YOUR EMAIL")
     }
 
