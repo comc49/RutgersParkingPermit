@@ -300,10 +300,10 @@ async function buyPermit(CREDS,res) {
     await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(223));
 
 
-    log("Choose the Location")
+    log("Choosing lot location")
     // livi, busch, doug, cook
     await page.select(LOT_INPUT_SELECTOR,lotList[CREDS.lot]);
-    log('lot list ');
+    log(`Selected ${lotList[CREDS.lot]}`);
     await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(230));
     await page.click(NEXT_BUTTON_SELECTOR);
     await page.waitForNavigation({timeout: TIMEOUT}).then(...resolveThen(232));
@@ -423,5 +423,6 @@ async function buyPermit(CREDS,res) {
     log("SUCCESS FULLY PURCHASED THE PERMIT")
     log("CHECK YOUR EMAIL")
     browser.close();
-    }
+    puppeteerRunning = false;
+}
 
