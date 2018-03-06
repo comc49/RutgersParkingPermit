@@ -422,5 +422,6 @@ async function buyPermit(CREDS,res) {
     await page.waitForNavigation().then(...resolveThen(301));
     log("SUCCESS FULLY PURCHASED THE PERMIT")
     log("CHECK YOUR EMAIL")
+    browser.close();
     }
 
