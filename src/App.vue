@@ -1,6 +1,6 @@
 <template>
   <div id="app" >
-    <v-app class="red lighten-2">
+    <v-app>
       <transition name="fade">
         <router-view/>
       </transition>
@@ -47,6 +47,7 @@ body {
 }
 #app {
   top: 0;
+  background-color: #E1E1DF;
   position: absolute;
   width: 100%;
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

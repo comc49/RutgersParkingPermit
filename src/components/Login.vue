@@ -1,6 +1,6 @@
 
 <template>
-  <div id="login" class="red lighten-2">
+  <div id="login">
     <h1>GPNJ RUTGERS</h1>
     <v-btn id="sign-in-button" color="success" class="sign-in-button" large @click="login">
       <svg id='logo' width="40" height="40" viewBox="0 0 24 24">

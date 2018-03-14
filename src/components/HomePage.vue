@@ -1,5 +1,5 @@
 <template>
-    <div id="home-page" class="red lighten-2">
+    <div id="home-page">
         <section id="welcome">
                 <v-layout row wrap>
                 <v-flex xs1>

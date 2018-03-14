@@ -389,6 +389,7 @@ async function buyPermit(CREDS,res) {
 
     
     await page.waitForNavigation({timeout: 3000 }).then(...resolveThen(271));
+    await page.waitForNavigation({timeout: 3000 }).then(...resolveThen(271));
 
     await page.focus(ACCOUNT_AUTHORIZATION_CHECKBOX_SELECTOR);
     await page.click(ACCOUNT_AUTHORIZATION_CHECKBOX_SELECTOR);
