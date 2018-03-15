@@ -1,85 +1,86 @@
 <template>
     <div id="home-page">
         <section id="welcome">
-                <v-layout row wrap>
-                <v-flex xs1>
-                </v-flex>
-                <v-flex xs10>
-                    <h1  class="display-2">Welcome {{userInfo ? userInfo.displayName: ''}} to Rutgers Parking Permit Purchaser! </h1>
-                </v-flex>
-                <v-flex xs1>
-                </v-flex>
-                </v-layout>
-            </v-flex>
-            <v-btn class="headline" color="success" large @click="$router.push('/form')">Enter/Update Address</v-btn>
-            <v-btn
-                class="headline"
-                color="success"
-                @click="dialog = true"
-                large
-            >
-                Buy a Guest Permit
-            </v-btn>
-    <v-dialog v-model="dialog" persistent max-width="500px">
-      <v-card>
-        <v-card-title>
-          <span class="headline">Buy Rutgers Guest Parking Permit</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container grid-list-md>
-            <v-layout wrap>
-                <v-flex xs12>
-                        <p class="text-lg-center red">NOTE:</p>
-                        <p class="text-lg-center">To purchase the guest permit, You need to have your Rutgers parking account registered and your vehicle added</p>
-                </v-flex>
-              <v-flex xs12 sm6>
-                <v-select
-                  label="Campus Lot"
-                  v-model="lot"
-                  autocomplete
-                  required
-                  :items="lots">
-                </v-select>
-              </v-flex>
-              <v-flex xs12 sm6>
-                    <v-text-field label="Vehicle Plate Number" v-model="plateNumber" type="text" required></v-text-field>
-              </v-flex>
-              <v-flex xs12>
-                    <v-card-text
-                        class="d-block py-0"
-                        v-bind:class="{'green--text': !msg.includes('error'),'red--text': msg.includes('error')}"
-                        v-for="(msg,i) in msgs" :key="i"
+            <v-layout>
+                <v-flex xs8 offset-xs2>
+                <v-card height="30vh">
+                    <v-layout row wrap>
+                        <v-flex>
+                            <h1  class="display-2">Welcome {{userInfo ? userInfo.displayName: ''}} to Rutgers Parking Permit Purchaser! </h1>
+                        </v-flex>
+                    </v-layout>
+                    <v-btn class="headline" color="success" large @click="$router.push('/form')">Enter/Update Address</v-btn>
+                    <v-btn
+                        class="headline"
+                        color="success"
+                        @click="dialog = true"
+                        large
                     >
-                        {{msg}}
-                    </v-card-text>
-              </v-flex>
-              <v-flex xs12>
-                      <v-card-text>
-                          Currently this application only supports purchasing
-                          today's guest permit. 
-                          <br>
-                          <small>If there is a need I can add a feature where you can buy a permit for a date range </small>
-                      </v-card-text>
-              </v-flex>
+                        Buy a Guest Permit
+                    </v-btn>
+                </v-card>
+                </v-flex>
             </v-layout>
-          </v-container>
-          <small>*indicates required field</small>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="secondary darken-1" flat @click.native="dialog = false">Close</v-btn>
-          <v-btn v-if="!showConfirm" color="secondary darken-1" flat @click.native="showConfirm=true">Buy</v-btn>
-          <v-btn
-            v-if="showConfirm"
-            color="green darken-1"
-            flat
-            @click.native="buyPermit"
-            :loading="loading"
-          >Confirm</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+            <v-dialog v-model="dialog" persistent max-width="500px">
 
+            <v-card>
+                <v-card-title>
+                <span class="headline">Buy Rutgers Guest Parking Permit</span>
+                </v-card-title>
+                <v-card-text>
+                <v-container grid-list-md>
+                    <v-layout wrap>
+                        <v-flex xs12>
+                                <p class="text-lg-center red">NOTE:</p>
+                                <p class="text-lg-center">To purchase the guest permit, You need to have your Rutgers parking account registered and your vehicle added</p>
+                        </v-flex>
+                    <v-flex xs12 sm6>
+                        <v-select
+                        label="Campus Lot"
+                        v-model="lot"
+                        autocomplete
+                        required
+                        :items="lots">
+                        </v-select>
+                    </v-flex>
+                    <v-flex xs12 sm6>
+                            <v-text-field label="Vehicle Plate Number" v-model="plateNumber" type="text" required></v-text-field>
+                    </v-flex>
+                    <v-flex xs12>
+                            <v-card-text
+                                class="d-block py-0"
+                                v-bind:class="{'green--text': !msg.includes('error'),'red--text': msg.includes('error')}"
+                                v-for="(msg,i) in msgs" :key="i"
+                            >
+                                {{msg}}
+                            </v-card-text>
+                    </v-flex>
+                    <v-flex xs12>
+                            <v-card-text>
+                                Currently this application only supports purchasing
+                                today's guest permit. 
+                                <br>
+                                <small>If there is a need I can add a feature where you can buy a permit for a date range </small>
+                            </v-card-text>
+                    </v-flex>
+                    </v-layout>
+                </v-container>
+                <small>*indicates required field</small>
+                </v-card-text>
+                <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="secondary darken-1" flat @click.native="dialog = false">Close</v-btn>
+                <v-btn v-if="!showConfirm" color="secondary darken-1" flat @click.native="showConfirm=true">Buy</v-btn>
+                <v-btn
+                    v-if="showConfirm"
+                    color="green darken-1"
+                    flat
+                    @click.native="buyPermit"
+                    :loading="loading"
+                >Confirm</v-btn>
+                </v-card-actions>
+            </v-card>
+            </v-dialog>
         </section>
     </div>
 </template>

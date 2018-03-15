@@ -3,96 +3,120 @@
         <v-card id="form">
             <h1>Billing Address/Credit Card Info/Vehicle Info</h1>
             <v-form class="address-form" v-model="valid" ref="form" lazy-validation >
-                <v-text-field
-                    label="First Name"
-                    v-model="firstName"
-                    :placeholder="firstName"
-                    :rules="nameRules"
-                    :disabled="saved"
-                    required
-                ></v-text-field>
-                <v-text-field
-                    label="Last Name"
-                    v-model="lastName"
-                    :placeholder="lastName"
-                    :rules="nameRules"
-                    :disabled="saved"
-                    required
-                ></v-text-field>
-                <v-text-field
-                    label="Address"
-                    v-model="address"
-                    :disabled="saved"
-                    required
-                ></v-text-field>
-                <v-text-field
-                    label="City"
-                    v-model="city"
-                    :rules="cityRules"
-                    :disabled="saved"
-                    required
-                ></v-text-field>
-                <v-text-field
-                    label="ZipCode"
-                    v-model="zipCode"
-                    :rules="zipRules"
-                    :disabled="saved"
-                    required
-                ></v-text-field>
-                <v-text-field
-                    label="E-mail (Permit will be sent to this email)"
-                    v-model="email"
-                    :rules="emailRules"
-                    :disabled="saved"
-                    required
-                ></v-text-field>
-                <v-text-field
-                    label="Rutgers Parking Username"
-                    v-model="rutgersUsername"
-                    :disabled="saved"
-                    required
-                ></v-text-field>
-                <v-text-field
-                    label="Rutgers Parking password"
-                    v-model="rutgersPassword"
-                    :type="hideFormInput ? 'password': 'text'"
-                    :disabled="saved"
-                    required
-                ></v-text-field>
-                <v-text-field
-                    label="Visa Credit Card Number"
-                    v-model="visaCC"
-                    :type="hideFormInput ? 'password': 'text'"
-                    :disabled="saved"
-                    required
-                ></v-text-field>
-                <v-text-field
-                    label="Visa Credit Card CVV2"
-                    v-model="visaCCCVV2"
-                    :type="hideFormInput ? 'password': 'text'"
-                    :disabled="saved"
-                    required
-                ></v-text-field>
-                <v-select
-                    label="Expiration Month"
-                    v-model="expirationMonth"
-                    :items="months"
-                    :rules="[v => !!v || 'Month is required']"
-                    required
-                ></v-select>
-                <v-select
-                    label="Expiration Year"
-                    v-model="expirationYear"
-                    :items="years"
-                    :rules="[v => !!v || 'Year is required']"
-                    required
-                ></v-select>
-                <v-text-field
-                    label="Vehicle Plate Number"
-                    v-model="plateNumber"
-                    :disabled="saved"
-                    required
-                ></v-text-field>
+                <v-layout wrap>
+                    <v-text-field
+                        label="First Name"
+                        v-model="firstName"
+                        :placeholder="firstName"
+                        :rules="nameRules"
+                        :disabled="saved"
+                        class="mx-2"
+                        required
+                    ></v-text-field>
+                    <v-text-field
+                        label="Last Name"
+                        v-model="lastName"
+                        :placeholder="lastName"
+                        :rules="nameRules"
+                        :disabled="saved"
+                        class="mx-2"
+                        required
+                    ></v-text-field>
+                    <v-text-field
+                        label="Address"
+                        v-model="address"
+                        :disabled="saved"
+                        class="mx-2"
+                        required
+                    ></v-text-field>
+                </v-layout>
+                <v-layout wrap>
+                    <v-text-field
+                        label="City"
+                        v-model="city"
+                        :rules="cityRules"
+                        :disabled="saved"
+                        class="mx-2"
+                        required
+                    ></v-text-field>
+                    <v-text-field
+                        label="ZipCode"
+                        v-model="zipCode"
+                        :rules="zipRules"
+                        :disabled="saved"
+                        class="mx-2"
+                        required
+                    ></v-text-field>
+                    <v-text-field
+                        label="E-mail (Permit will be sent to this email)"
+                        v-model="email"
+                        :rules="emailRules"
+                        :disabled="saved"
+                        class="mx-2"
+                        required
+                    ></v-text-field>
+                </v-layout>
+                <v-layout wrap>
+                    <v-text-field
+                        label="Rutgers Parking Username"
+                        v-model="rutgersUsername"
+                        :disabled="saved"
+                        class="mx-2"
+                        required
+                    ></v-text-field>
+                    <v-text-field
+                        label="Rutgers Parking password"
+                        v-model="rutgersPassword"
+                        :type="hideFormInput ? 'password': 'text'"
+                        :disabled="saved"
+                        class="mx-2"
+                        required
+                    ></v-text-field>
+                    <v-text-field
+                        label="Visa Credit Card Number"
+                        v-model="visaCC"
+                        :type="hideFormInput ? 'password': 'text'"
+                        :disabled="saved"
+                        class="mx-2"
+                        required
+                    ></v-text-field>
+                </v-layout>
+                <v-layout wrap>
+                    <v-text-field
+                        label="Visa Credit Card CVV2"
+                        v-model="visaCCCVV2"
+                        :type="hideFormInput ? 'password': 'text'"
+                        :disabled="saved"
+                        class="mx-2"
+                        required
+                    ></v-text-field>
+                    <v-select
+                        label="Expiration Month"
+                        v-model="expirationMonth"
+                        :items="months"
+                        :rules="[v => !!v || 'Month is required']"
+                        class="mx-2"
+                        required
+                    ></v-select>
+                    <v-select
+                        label="Expiration Year"
+                        v-model="expirationYear"
+                        :items="years"
+                        :rules="[v => !!v || 'Year is required']"
+                        class="mx-2"
+                        required
+                    ></v-select>
+                </v-layout>
+                <v-layout>
+                    <v-flex xs4 offset-xs4>
+                    <v-text-field
+                        label="Vehicle Plate Number"
+                        v-model="plateNumber"
+                        :disabled="saved"
+                        required
+                    ></v-text-field>
+                    </v-flex>
+                </v-layout>
                 <v-btn @click="submit" :disabled="!valid || saved" >
                     submit
                 </v-btn>
@@ -288,8 +312,8 @@ export default {
     .fixedButton {
         width: 10rem;
         position: fixed;
-        top: 2rem;
-        right: 2rem;
+        top: 15vh;
+        right: 15vw;
     }
     #form {
         display: flex;
@@ -304,7 +328,7 @@ export default {
     .go-back {
         position: fixed;
         right: 17vw;
-        bottom: 3rem;
+        bottom: 15vh;
     }
 }
 </style>

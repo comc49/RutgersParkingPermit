@@ -326,7 +326,7 @@ async function buyPermit(CREDS,res) {
 
     log("Check out process order details")
     await page.click(PAY_WITH_CARD_SELECTOR);
-    await page.waitForSelector(CARD_TYPE_DROPDOWN_SELECTOR);
+    await page.waitForSelector(CARD_TYPE_DROPDOWN_SELECTOR).then(...resolveThen(329));
     log("payment");
     await page.select(CARD_TYPE_DROPDOWN_SELECTOR,'V');
 
