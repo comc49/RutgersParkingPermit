@@ -413,7 +413,7 @@ async function buyPermit(CREDS,res) {
     // If I am testing
     await page.focus(ACCOUNT_AUTHORIZATION_SUBMIT_ORDER_SELECTOR);
     // enable in production
-    //await page.click(ACCOUNT_AUTHORIZATION_SUBMIT_ORDER_SELECTOR);
+    await page.click(ACCOUNT_AUTHORIZATION_SUBMIT_ORDER_SELECTOR);
     log('order placed')
 
     // wait for the loading page
