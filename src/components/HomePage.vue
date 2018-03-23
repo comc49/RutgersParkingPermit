@@ -3,7 +3,7 @@
         <section id="welcome">
             <v-layout>
                 <v-flex xs8 offset-xs2>
-                <v-card height="30vh">
+                <v-card class="pb-4">
                     <v-layout row wrap>
                         <v-flex>
                             <h1  class="display-2">Welcome {{userInfo ? userInfo.displayName: ''}} to Rutgers Parking Permit Purchaser! </h1>

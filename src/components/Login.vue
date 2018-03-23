@@ -1,7 +1,7 @@
 <template>
   <v-layout mt-5>
-    <v-flex xs4 offset-xs4 mt-5>
-    <v-card height="35vh">
+    <v-flex xs6 offset-xs3 mt-5>
+    <v-card>
       <div id="login">
         <h1>GPNJ RUTGERS</h1>
         <v-btn id="sign-in-button" color="success" class="sign-in-button" large @click="login">
