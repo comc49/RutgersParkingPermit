@@ -11,11 +11,13 @@ var bodyParser = require('body-parser');
 var serveStatic = require('serve-static');
 var puppeteerRunning = false;
 
-const result = dotenv.config()
-
-if (result.error) {
-  throw result.error
+if (process.env.NODE_ENV != 'production') {
+    const result = dotenv.config()
+    if (result.error) {
+    throw result.error
+    }
 }
+
 const app = express();
 let browser = null 
 
